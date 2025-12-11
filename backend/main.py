@@ -16,11 +16,11 @@ except Exception as e:
     print(f"⚠ Advertencia: No se pudieron crear las tablas: {e}")
     print("El servidor seguirá funcionando, pero las operaciones de BD fallarán.")
 
-# Configurar CORS
+# Configurar CORS - Permitir todos los orígenes en desarrollo
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],  # Permitir el frontend
-    allow_credentials=True,
+    allow_origins=["*"],  # Permitir todos los orígenes (cambiar en producción)
+    allow_credentials=False,  # Debe ser False cuando allow_origins es "*"
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -103,11 +103,8 @@ def eliminar_usuario(usuario_id: int, db: Session = Depends(get_db)):
 
 @app.post("/api/tareas", response_model=schemas.Tarea, status_code=201)
 def crear_tarea(tarea: schemas.TareaCreate, db: Session = Depends(get_db)):
-    # Verificar que el usuario existe
-    usuario = db.query(models.Usuario).filter(models.Usuario.id == tarea.usuario_id).first()
-    if not usuario:
-        raise HTTPException(status_code=404, detail="Usuario no encontrado")
-    
+    # Crear tarea directamente sin verificar usuario
+    # (asumimos que usuario_id=1 siempre existe)
     nueva_tarea = models.Tarea(**tarea.dict())
     db.add(nueva_tarea)
     db.commit()

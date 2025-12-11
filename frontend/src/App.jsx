@@ -10,6 +10,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [dbStatus, setDbStatus] = useState(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
     cargarTareas();
@@ -59,6 +60,14 @@ export default function App() {
       const nuevaTarea = await response.json();
       setTareas([...tareas, nuevaTarea]);
       setInput("");
+      
+      // Mostrar modal de éxito
+      setShowSuccessModal(true);
+      
+      // Recargar después de 2 segundos
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
     } catch (err) {
       setError(err.message);
       console.error("Error:", err);
@@ -218,6 +227,28 @@ export default function App() {
           </div>
         </div>
       </div>
+
+      {/* Modal de éxito */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
+          <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-pink-500 rounded-2xl p-8 max-w-md mx-4 shadow-2xl shadow-pink-500/50 animate-scale-in">
+            <div className="text-center">
+              <div className="mb-4 flex justify-center">
+                <div className="w-16 h-16 bg-gradient-to-br from-pink-600 to-pink-500 rounded-full flex items-center justify-center shadow-lg shadow-pink-500/50">
+                  <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-2">¡Tarea Agregada!</h3>
+              <p className="text-gray-400 mb-4">Tu tarea se ha guardado exitosamente</p>
+              <div className="flex justify-center">
+                <div className="w-12 h-1 bg-gradient-to-r from-transparent via-pink-500 to-transparent rounded-full animate-pulse"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
